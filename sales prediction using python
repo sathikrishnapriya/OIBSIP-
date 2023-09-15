@@ -1,0 +1,58 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+plt.tight_layout()
+import os
+import statsmodels.formula.api as sm
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+data_path = "/content/Advertising.csv"
+df = pd.read_csv(data_path)
+
+df.head()
+df.columns
+df.rename(columns={'Unnamed: 0': 'Index'}, inplace=True)
+df.shape
+df.info()
+df
+df.describe()
+df.isnull().values.any()
+df.isnull().sum()
+sns.pairplot(df, x_vars=["TV", "Radio", "Newspaper"], y_vars="Sales", kind="reg")
+df.hist(bins=20, figsize=(13, 9))
+sns.lmplot(x='TV', y='Sales', data=df)
+sns.lmplot(x='Radio', y='Sales', data=df)
+sns.lmplot(x='Newspaper', y='Sales', data=df)
+corrmat = df.corr()
+f, ax = plt.subplots(figsize=(12, 9))
+sns.heatmap(corrmat, vmin=0, vmax=1, square=True, cmap="cividis", ax=ax)
+plt.show()
+X = df.drop('Sales', axis=1)
+y = df[["Sales"]]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=40)
+lin_model = sm.ols(formula="Sales ~ TV + Radio + Newspaper", data=df).fit()
+print(lin_model.params, "\n")
+print(lin_model.summary())
+
+print(lin_model.summary())
+for name, model in models:
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    print(f"{name}: RMSE = {rmse:.2f}")
+
+    new_data_1 = pd.DataFrame({'TV': [100], 'Radio': [50], 'Newspaper': [25]})
+predicted_sales_1 = lin_model.predict(new_data_1)
+print("Predicted Sales (Data 1):", predicted_sales_1)
+
+new_data_2 = pd.DataFrame({'TV': [25], 'Radio': [63], 'Newspaper': [80]})
+predicted_sales_2 = lin_model.predict(new_data_2)
+print("Predicted Sales (Data 2):", predicted_sales_2)
